@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Properties xmlns="http://www.aliesha.by"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Property id="connection">
+        <Path>connection</Path>
+    </Property>
+    <Property id="label">
+        <Path>label</Path>
+        <Locales>
+            <Locale>ru</Locale>
+            <Locale>en_US</Locale>
+        </Locales>
+    </Property>
+</Properties>

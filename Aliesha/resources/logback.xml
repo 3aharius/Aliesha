@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <property name="log_location" value="${CATALINA_HOME}/logs" />
+    <property name="app_name" value="Aliesha" />
+    <property name="logger_name" value="aliesha.logger" />
+
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator" />
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- Daily rollover -->
+			<fileNamePattern>${log_location}/${app_name}-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- Keep 7 days' worth of history -->
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+
+		<layout class="ch.qos.logback.classic.PatternLayout">
+		  <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{0} %class.%method [%line] : %msg%n</Pattern>
+			<immediateFlush>true</immediateFlush>
+			<outputPatternAsHeader>true</outputPatternAsHeader>
+		  </encoder>
+		</layout>
+	</appender>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{0} %class.%method [%line] : %msg%n</pattern>
+		</encoder>
+	</appender>
+
+
+	<logger name="${logger_name}" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+	<!-- <logger name="ru.softclubsx.jcbank.manager" level="DEBUG"
+		additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+	<logger name="ru.softclubsx.jcbank.model" level="DEBUG"
+		additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+	<logger name="ru.softclubsx.jcbank.servlet" level="DEBUG"
+		additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+
+	<root level="DEBUG">
+		<appender-ref ref="FILE" />
+		<appender-ref ref="STDOUT" />
+	</root> -->
+
+</configuration>
