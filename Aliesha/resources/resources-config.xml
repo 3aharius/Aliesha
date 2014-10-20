@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Properties xmlns="http://www.aliesha.by"
+<Properties xmlns="http://www.aliesha.by/resources"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Property id="connection">
         <Path>connection</Path>

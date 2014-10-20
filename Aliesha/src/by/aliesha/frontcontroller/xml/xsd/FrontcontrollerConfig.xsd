@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:fr="http://www.aliesha.by/frontcontroller"
+    targetNamespace="http://www.aliesha.by/frontcontroller" elementFormDefault="qualified">
+    <xs:element name="Config">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="fr:ControllerScanPacks"/>
+                <xs:element ref="fr:ViewDir"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="ControllerScanPacks">
+        <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element ref="fr:Package"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="ViewDir" nillable="false" type="xs:string"/>
+    <xs:element name="Package" type="xs:string"/>
+</xs:schema>
