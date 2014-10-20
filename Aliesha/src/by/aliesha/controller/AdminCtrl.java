@@ -10,12 +10,12 @@ public class AdminCtrl {
     
     @Action(urlPattern = "/index")
     public String index(HttpServletRequest request) {
-        return "index";
+        return "admin/index";
     }
     
     @Action(urlPattern = "/users")
     public String users(HttpServletRequest request) {
-        return "users";
+        return "admin/users";
     }
 
 }

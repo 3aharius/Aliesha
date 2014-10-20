@@ -15,10 +15,10 @@ public class URLParser {
     public static ParsedUrl parseUrl(String url) {
         logger.debug("ENTER");
         logger.debug("URL: " + url);
-        url = url.substring(1);
+        url = url.trim().substring(1);
         String ctrlUrl = INDEX_CTRL;
         String actionUrl = INDEX_ACTION;
-        if(!URL_DELIMETER.equals(url)) {
+        if(!url.isEmpty()) {
             if(url.endsWith(URL_DELIMETER)) {
                 url = url.substring(0, url.length() - 1);
             }

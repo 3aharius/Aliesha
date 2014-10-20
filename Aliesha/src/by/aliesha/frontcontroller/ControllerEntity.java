@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import by.aliesha.exception.PageNotFoundException;
+import by.aliesha.exception.UnsupportedHttpMethodException;
+
 public class ControllerEntity {
 
     private Object controller;
@@ -30,6 +33,16 @@ public class ControllerEntity {
 
     public Object getController() {
         return controller;
+    }
+    
+    public void checkActionRequest(String httpMethod, String action, String controller) throws UnsupportedHttpMethodException, PageNotFoundException {
+        if(methodsBindings.containsKey(httpMethod)) {
+            if(!methodsBindings.get(httpMethod).containsKey(action)) {
+                throw new PageNotFoundException("Action " + action + "for controller " + controller + " not found");
+            }
+        } else {
+            throw new UnsupportedHttpMethodException("Http method " + httpMethod + " not supported for action " + action);
+        }
     }
     
 }

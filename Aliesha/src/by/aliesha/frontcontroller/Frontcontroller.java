@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,8 +15,8 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.org.apache.bcel.internal.generic.LoadClass;
-
+import by.aliesha.exception.PageNotFoundException;
+import by.aliesha.exception.UnsupportedHttpMethodException;
 import by.aliesha.frontcontroller.annotation.Action;
 import by.aliesha.frontcontroller.annotation.Controller;
 import by.aliesha.frontcontroller.xml.model.Config;
@@ -27,6 +25,7 @@ import by.aliesha.url.URLParser;
 import by.aliesha.utils.AppConstants;
 import by.aliesha.utils.FileUtils;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Frontcontroller {
     
     private static final String FRONTCONTROLLER_SETTINGS_FILE_NAME = "frontcontroller-config.xml";
@@ -94,13 +93,17 @@ public class Frontcontroller {
         return frontcontroller;
     }
     
-    public String invokeAction(HttpServletRequest request) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public String invokeAction(HttpServletRequest request) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, PageNotFoundException, UnsupportedHttpMethodException {
         logger.debug("ENTER");
         logger.debug("PathInfo: " + request.getPathInfo());
         ParsedUrl parsedUrl = URLParser.parseUrl(request.getPathInfo());
         logger.debug("Parsed controller: " + parsedUrl.getController());
         logger.debug("Parsed action: " + parsedUrl.getAction());
         ControllerEntity ctrlEntry = controllerEntries.get(parsedUrl.getController().toLowerCase());
+        if(ctrlEntry == null) {
+            throw new PageNotFoundException("Controller " + parsedUrl.getController() + " not found.");
+        }
+        ctrlEntry.checkActionRequest(request.getMethod().toUpperCase(), parsedUrl.getAction(), parsedUrl.getController());
         String view = invoker.invoke(ctrlEntry, parsedUrl.getAction(), request);
         logger.debug("EXIT");
         return view;
