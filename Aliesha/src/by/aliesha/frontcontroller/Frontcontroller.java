@@ -8,12 +8,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import by.aliesha.exception.PageNotFoundException;
 import by.aliesha.exception.UnsupportedHttpMethodException;
@@ -24,11 +23,13 @@ import by.aliesha.url.ParsedUrl;
 import by.aliesha.url.URLParser;
 import by.aliesha.utils.AppConstants;
 import by.aliesha.utils.FileUtils;
+import by.aliesha.utils.JaxbUtils;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class Frontcontroller {
     
     private static final String FRONTCONTROLLER_SETTINGS_FILE_NAME = "frontcontroller-config.xml";
+    private static final String XSD_FILE_LOCATION = "by/aliesha/frontcontroller/xml/xsd/FrontcontrollerConfig.xsd";
     private static final String CLASS_EXTENSION = ".class";
     private static final Logger logger = LoggerFactory.getLogger(AppConstants.LOGGER_NAME);
     private static Map<String, ControllerEntity> controllerEntries;
@@ -40,9 +41,8 @@ public class Frontcontroller {
         InputStream configFileIs = FileUtils.getFileAsStreamFromClassPath(FRONTCONTROLLER_SETTINGS_FILE_NAME);
         try {
             if (configFileIs != null) {
-                JAXBContext context = JAXBContext.newInstance(Config.class);
-                Unmarshaller unmarshaller = context.createUnmarshaller();
-                Config frontCtrlConfig = (Config) unmarshaller.unmarshal(configFileIs);
+                String xsdLocation = FileUtils.getClassLoaderPath(XSD_FILE_LOCATION);
+                Config frontCtrlConfig = JaxbUtils.unmarshallProperties(configFileIs, xsdLocation, Config.class);
                 String classPath = FileUtils.getClassLoaderPath();
                 controllerEntries = new ConcurrentHashMap<String, ControllerEntity>();
                 for(String pack : frontCtrlConfig.getControllerScanPacks().getPackages()) {
@@ -79,7 +79,7 @@ public class Frontcontroller {
             } else {
                 logger.error("Config file " + FRONTCONTROLLER_SETTINGS_FILE_NAME + " not found...");
             }
-        } catch (JAXBException e) {
+        } catch (JAXBException | SAXException e) {
             logger.error("Invalid file format:" + FRONTCONTROLLER_SETTINGS_FILE_NAME, e);
         }
         

@@ -9,7 +9,11 @@ public class FileUtils {
     }
     
     public static String getClassLoaderPath() {
-        return Thread.currentThread().getContextClassLoader().getResource("").getPath();
+        return getClassLoaderPath("");
+    }
+    
+    public static String getClassLoaderPath(String path) {
+        return Thread.currentThread().getContextClassLoader().getResource(path).getPath();
     }
 
 }

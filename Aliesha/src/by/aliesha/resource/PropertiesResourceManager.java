@@ -1,5 +1,6 @@
 package by.aliesha.resource;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
@@ -7,22 +8,29 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
+import by.aliesha.exception.ContextInitializeException;
 import by.aliesha.resource.xml.model.FileLocales;
 import by.aliesha.resource.xml.model.Properties;
 import by.aliesha.resource.xml.model.PropertyFile;
 import by.aliesha.utils.AppConstants;
 import by.aliesha.utils.FileUtils;
+import by.aliesha.utils.JaxbUtils;
 
 public final class PropertiesResourceManager {
 
     private static final String RESOURCES_SETTINGS_FILE_NAME = "resources-config.xml";
+    private static final String XSD_FILE_LOCATION = "by/aliesha/resource/xml/xsd/ResourcesConfig.xsd";
     private static final Logger logger = LoggerFactory.getLogger(AppConstants.LOGGER_NAME);
     private static volatile PropertiesResourceManager resoureManager;
     private Map<String, Map<Locale, ResourceBundle>> resources;
@@ -32,9 +40,8 @@ public final class PropertiesResourceManager {
         try {
             InputStream configFileIs = FileUtils.getFileAsStreamFromClassPath(RESOURCES_SETTINGS_FILE_NAME);
             if (configFileIs != null) {
-                JAXBContext context = JAXBContext.newInstance(Properties.class);
-                Unmarshaller unmarshaller = context.createUnmarshaller();
-                Properties properties = (Properties) unmarshaller.unmarshal(configFileIs);
+                String xsdLocation = FileUtils.getClassLoaderPath(XSD_FILE_LOCATION);
+                Properties properties = JaxbUtils.unmarshallProperties(configFileIs, xsdLocation, Properties.class);
                 Map<String, Map<Locale, ResourceBundle>> resourcesMap = new ConcurrentHashMap<String, Map<Locale, ResourceBundle>>();
                 for (PropertyFile file : properties.getProperties()) {
                     logger.debug("file name: " + file.getId());
@@ -46,26 +53,22 @@ public final class PropertiesResourceManager {
                             try {
                                 Locale fileLocale = Locale.forLanguageTag(loc);
                                 if (fileLocale != Locale.ROOT) {
-                                    ResourceBundle bundle = ResourceBundle
-                                            .getBundle(file.getPath(),
-                                                    fileLocale);
+                                    ResourceBundle bundle = ResourceBundle.getBundle(file.getPath(), fileLocale);
                                     propsByLocale.put(fileLocale, bundle);
                                 }
                             } catch (MissingResourceException ex) {
-                                logger.error(
-                                        "Properties file " + file.getPath()
-                                                + " not found...", ex);
+                                logger.error(ex.getMessage(), ex);
+                                throw new ContextInitializeException("Properties file " + file.getPath() + " not found...");
                             }
                         }
                     }
                     if (!propsByLocale.containsKey(Locale.getDefault())) {
                         try {
-                            ResourceBundle bundle = ResourceBundle.getBundle(
-                                    file.getPath(), Locale.getDefault());
+                            ResourceBundle bundle = ResourceBundle.getBundle(file.getPath(), Locale.getDefault());
                             propsByLocale.put(Locale.getDefault(), bundle);
                         } catch (MissingResourceException ex) {
-                            logger.error("Properties file " + file.getPath()
-                                    + " not found...", ex);
+                            logger.error(ex.getMessage(), ex);
+                            throw new ContextInitializeException("Properties file " + file.getPath() + " not found...");
                         }
                     }
                     if (propsByLocale.size() > 0) {
@@ -74,20 +77,18 @@ public final class PropertiesResourceManager {
                 }
                 resoureManager = new PropertiesResourceManager(resourcesMap);
             } else {
-                logger.error("Config file " + RESOURCES_SETTINGS_FILE_NAME
-                        + " not found...");
+                throw new ContextInitializeException("Config file " + RESOURCES_SETTINGS_FILE_NAME + " not found...");
             }
-        } catch (JAXBException e) {
-            logger.error("Invalid file format:" + RESOURCES_SETTINGS_FILE_NAME, e);
+        } catch (JAXBException | SAXException ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new ContextInitializeException("Invalid file format:" + RESOURCES_SETTINGS_FILE_NAME);
         }
         logger.debug("Finish app resourses initialize ....");
     }
 
-    private PropertiesResourceManager() {
-    }
+    private PropertiesResourceManager() {}
 
-    private PropertiesResourceManager(
-            Map<String, Map<Locale, ResourceBundle>> resources) {
+    private PropertiesResourceManager(Map<String, Map<Locale, ResourceBundle>> resources) {
         this.resources = resources;
     }
 
@@ -103,5 +104,5 @@ public final class PropertiesResourceManager {
         return propsByLocale.containsKey(userLocale) ? propsByLocale
                 .get(userLocale) : propsByLocale.get(Locale.getDefault());
     }
-
+    
 }

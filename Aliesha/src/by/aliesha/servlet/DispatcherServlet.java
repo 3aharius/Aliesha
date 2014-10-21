@@ -1,7 +1,6 @@
 package by.aliesha.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.servlet.ServletException;
@@ -18,9 +17,6 @@ import by.aliesha.exception.UnsupportedHttpMethodException;
 import by.aliesha.frontcontroller.Frontcontroller;
 import by.aliesha.utils.AppConstants;
 
-/**
- * Servlet implementation class DispatcherServlet
- */
 @WebServlet("/dispatcher/*")
 public class DispatcherServlet extends HttpServlet {
 	
@@ -43,17 +39,6 @@ public class DispatcherServlet extends HttpServlet {
             logger.error(e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-	}
-       
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
-		out.println(request.getRequestURL());
-		out.println(request.getLocalAddr());
-		out.println(request.getPathInfo());
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 	}
 
 }
