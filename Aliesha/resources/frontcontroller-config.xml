@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Config xmlns="http://www.aliesha.by/frontcontroller"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <ControllerScanPacks>
-        <Package>by.aliesha.controller</Package>
-    </ControllerScanPacks>
-    <ViewDir>/jsp</ViewDir>
-</Config>
