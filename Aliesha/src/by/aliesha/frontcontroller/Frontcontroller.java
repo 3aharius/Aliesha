@@ -23,7 +23,7 @@ import by.aliesha.url.ParsedUrl;
 import by.aliesha.url.URLParser;
 import by.aliesha.utils.AppConstants;
 import by.aliesha.utils.FileUtils;
-import by.aliesha.utils.JaxbUtils;
+import by.aliesha.utils.XmlUtils;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class Frontcontroller {
@@ -42,7 +42,7 @@ public class Frontcontroller {
         try {
             if (configFileIs != null) {
                 String xsdLocation = FileUtils.getClassLoaderPath(XSD_FILE_LOCATION);
-                Config frontCtrlConfig = JaxbUtils.unmarshallProperties(configFileIs, xsdLocation, Config.class);
+                Config frontCtrlConfig = XmlUtils.unmarshallXmlFile(configFileIs, xsdLocation, Config.class);
                 String classPath = FileUtils.getClassLoaderPath();
                 controllerEntries = new ConcurrentHashMap<String, ControllerEntity>();
                 for(String pack : frontCtrlConfig.getControllerScanPacks().getPackages()) {

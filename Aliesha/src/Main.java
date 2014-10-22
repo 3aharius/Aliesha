@@ -22,11 +22,9 @@ public class Main {
         Frontcontroller.getInstance();
         // generateTestFile();
         System.out.println(Locale.forLanguageTag("ru"));
-        PropertiesResourceManager manager = PropertiesResourceManager
-                .getInstance();
+        PropertiesResourceManager manager = PropertiesResourceManager.getInstance();
 
-        ResourceBundle bundle1 = manager.getBundle("connection",
-                Locale.getDefault());
+        ResourceBundle bundle1 = manager.getBundle("connection", Locale.getDefault());
         System.out.println("bundle1 locale = " + bundle1.getLocale());
         for (String key : bundle1.keySet()) {
             System.out.printf("%s=%s\n", key, bundle1.getString(key));
